@@ -1,4 +1,4 @@
 # djangoecommerce
-Loja Virtual com python3 e django
+E-Commerce whit python3 and django
 
 
