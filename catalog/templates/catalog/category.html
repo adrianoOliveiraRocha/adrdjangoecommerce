@@ -1,5 +1,8 @@
 {% extends "base.html" %}
 
+<!-- load the register templatetag pagination -->
+{% load pagination %}
+
 {% block title %}
     {{ current_category }} | {{ block.super }}
 {% endblock %}
@@ -25,6 +28,9 @@
         </div>
     </div>
     {% endfor %}
-
 </div>
+
+<!-- use the template tag pagination -->
+{% pagination request paginator pag_obj %}
+
 {% endblock %}
