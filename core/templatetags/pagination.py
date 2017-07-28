@@ -2,7 +2,7 @@
 
 from django.template import Library
 
-
+# register the tag
 register = Library()
 
 
