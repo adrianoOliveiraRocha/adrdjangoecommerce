@@ -30,6 +30,7 @@
               href="{% url 'catalog:product_list' %}" id="download">Categorias
               <span class="caret"></span></a>
               <ul class="dropdown-menu" aria-labelledby="download">
+              <li><a href="{% url 'catalog:product_list' %}">Todas</a></li>
             {% for category in categories %}
               <li><a href="{{ category.get_absolute_url }}">
               {{ category }}

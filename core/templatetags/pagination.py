@@ -13,6 +13,7 @@ def pagination(request, paginator, page_obj):
     context['request'] = request
     context['page_obj'] = page_obj
     getvars = request.GET.copy()
+    print("\n\n{0}\n\n".format(getvars))
     if 'page' in getvars:
         del getvars['page']
     if len(getvars) > 0:
