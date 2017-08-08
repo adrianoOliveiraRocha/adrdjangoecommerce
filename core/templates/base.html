@@ -43,12 +43,23 @@
 			</li>
           </ul>
           <ul class="nav navbar-nav navbar-right">
-            <li><a href="#">Minha Conta</a></li>
+              <li>
+              {% if user.is_authenticated %}
+                  <a href="{% url 'logout' %}" title="Logado como {{user}}">Sair</a>
+              {% else %}
+              <a href="{% url 'login' %}" style="float: left"
+                  title="Click aqui para logar-se">Entrar</a>
+              
+              <a href="{% url 'accounts:register' %}" style="float: right"
+                  title="Click aqui para registrar-se">Registrar-se</a>
+              
+              {% endif %}
+              </li>
           </ul>
         </div>
       </div>
     </div>
-    <div class="container">
+    <div class="container margin-top">
 		{% block container %}{% endblock %}
 		<footer>
 			<div class="row">

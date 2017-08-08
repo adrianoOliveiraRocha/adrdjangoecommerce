@@ -1,13 +1,16 @@
 # coding=utf-8
 
 from django.shortcuts import render
-#from django.http import HttpResponse
-
+from django.views.generic import TemplateView
 from .forms import ContactForm
+from django.contrib.auth import get_user_model
 
 
-def index(request):
-    return render(request, 'index.html')
+User = get_user_model()
+
+
+class IndexView(TemplateView):
+    template_name = 'index.html'
 
 
 def contact(request):
@@ -21,3 +24,4 @@ def contact(request):
         'success': success
     }
     return render(request, 'contact.html', context)
+

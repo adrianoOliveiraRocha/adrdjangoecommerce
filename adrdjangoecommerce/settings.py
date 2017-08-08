@@ -29,8 +29,8 @@ INSTALLED_APPS = [
     'widget_tweaks',
     # apps
     'core',
+    'accounts',
     'catalog',
-
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -132,6 +132,16 @@ STATICFILES_DIRS = (
 MEDIA_ROOT = 'media'
 MEDIA_URL = '/media/'
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# auth
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = 'index'
+LOGOUT_URL = 'logout'
+AUTH_USER_MODEL = 'accounts.User'
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'accounts.backends.ModelBackend',
+)
 
 try:
     from .local_settings import *

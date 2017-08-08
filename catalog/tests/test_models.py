@@ -5,7 +5,7 @@ from django.core.urlresolvers import reverse
 
 from model_mommy import mommy
 
-from catalog.models import Category, Product
+from catalog.models import Product
 
 
 class CategoryTestCase(TestCase):
