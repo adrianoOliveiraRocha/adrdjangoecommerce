@@ -1,6 +1,8 @@
 # coding=utf-8
 from django.db import models
 from django.conf import settings
+from catalog.models import Product
+from pagseguro import PagSeguro
 
 
 class CartItemManage(models.Manager):
@@ -86,7 +88,75 @@ class Order(models.Model):
     def __str__(self):
         return 'Pedido #{}'.format(self.pk)
 
+    def products(self):
+#        Take the id of each product
+        products_ids = self.items.values_list('product')
+        return Product.objects.filter(pk__in=products_ids)
 
+    def total(self):
+        aggregate_queryset = self.items.aggregate(
+                total=models.Sum(
+                        models.F('price') * models.F('quantity'),
+                        output_field=models.DecimalField()
+                        )
+                )
+        return aggregate_queryset['total']
+    
+    def pagseguro_update_status(self, status):
+        if status == '3':
+            self.status = 1
+        elif status == '7':
+            self.status = 2
+        self.save()
+
+    def complete(self):
+        self.status = 1
+        self.save()
+    
+    def pagseguro(self):
+        # this PAGSEGURO_TOKEN is for tests
+        self.payment_option = 'pagseguro'
+        self.save()
+        pg = PagSeguro(
+            email=settings.PAGSEGURO_EMAIL, token=settings.PAGSEGURO_TOKEN,
+            config={'sandbox': settings.PAGSEGURO_SANDBOX}
+        )
+        pg.sender = {'email': self.user.email}
+        pg.reference_prefix = ''
+        pg.shipping = None
+        pg.reference = self.pk
+        for item in self.items.all():
+            pg.items.append(
+                {
+                    'id': item.product.pk,
+                    'description': item.product.name,
+                    'quantity': item.quantity,
+                    'amount': '%.2f' % item.price
+                }        
+            )
+        
+        return pg
+
+    def paypal(self):
+        self.payment_option = 'pagseguro'
+        self.save()
+        paypal_dict = {
+                'upload': 1,
+                'business': settings.PAYPAL_EMAIL,
+                'invoice': self.pk,
+                'cmd': '_cart',
+                'currency_code': 'BRL',
+                'charset': 'utf-8',
+        }
+        index = 1
+        for item in self.items.all():
+            paypal_dict['amount_{}'.format(index)] = '%2.f' % item.price
+            paypal_dict['item_name_{}'.format(index)] = item.product.name
+            paypal_dict['quantity_{}'.format(index)] = item.quantity
+            index = index + 1
+        return paypal_dict
+    
+    
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, verbose_name='Pedido',
                               related_name='items')
@@ -110,4 +180,4 @@ def post_save_cart_item(instance, **kwargs):
 models.signals.post_save.connect(
         post_save_cart_item, sender=CartItem,
         dispatch_uid='post_save_cart_item'
-    )
+)

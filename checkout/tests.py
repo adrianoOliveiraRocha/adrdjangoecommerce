@@ -39,7 +39,6 @@ class CreateCartItemTestCase(TestCase):
 
     def test_add_cart_item_complex(self):
         response = self.client.get(self.url)
-        response = self.client.get(self.url)
         cart_item = CartItem.objects.get()
         self.assertEquals(cart_item.quantity, 2)
 
